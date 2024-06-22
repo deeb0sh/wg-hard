@@ -142,10 +142,10 @@ def home():
 @app.route("/api/getconf/<string:server>/<string:user>", endpoint="getconf", methods=['GET'])
 @token_required
 def getWGconf(server,user):
-    if server == "ru.darksurf.ru":
-        server = "server_ru" 
-    elif server == "fi.darksurf.ru":
-        server = "server_fi"
+    if server == "ru.darksurf.ru":  # заменить
+        server = "server_ru"        #
+    elif server == "fi.darksurf.ru":#
+        server = "server_fi"        #
 
     token = request.cookies.get('t') 
     data = jwt.decode(token, app.config['secret_key'], algorithms=['HS256'])
@@ -156,7 +156,7 @@ def getWGconf(server,user):
                 wg_conf = (f"""
 ### DarkSurf.ru v0.1
 ### user:{user} 
-### server:{server}
+### 
                           
 [Interface]
 PrivateKey = {i["privkey"]}
