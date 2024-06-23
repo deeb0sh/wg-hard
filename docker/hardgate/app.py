@@ -63,6 +63,15 @@ def select_s_lan(table,login):
     x = json.loads(x)
     return x[0]
 
+def select_c_ip(table,login):
+    c.execute(f"""
+          select jsonb_build_object('c_ip', server->'c_ip') from {table} WHERE id_acc = (SELECT id_acc FROM accounts WHERE login = ('{login}'))
+          """)
+    tmp=c.fetchone()
+    x = json.dumps(tmp)
+    x = json.loads(x)
+    return x[0]
+
 def select_c_conf(table,login,user):
     c.execute(f"""
              SELECT "clients" FROM {table} WHERE id_acc = (SELECT id_acc FROM accounts WHERE login = ('{login}'))
@@ -87,6 +96,13 @@ def WGkeys():
     privkey = subprocess.check_output("wg genkey", shell=True).decode("utf-8").strip()
     pubkey = subprocess.check_output(f"echo '{privkey}' | wg pubkey", shell=True).decode("utf-8").strip()
     return (privkey, pubkey)
+
+def add_client(table,c_json,login):
+    c.execute(f"""
+                UPDATE {table} SET clients = clients || '{c_json}'::jsonb WHERE id_acc = (SELECT id_acc FROM accounts WHERE login = ('{login}'))
+        """)
+    conn.commit()
+    return 0
 
 def token_required(f):
     def decorated(*args, **kwargs):
@@ -171,18 +187,23 @@ PublicKey = {x["pubkey"]}
 AllowedIPs = 0.0.0.0/0
 Endpoint = {x["w_host"]}:{x["w_port"]}""") 
         return wg_conf
-    elif request.method == 'POST': # если POST
-        ip_lan = select_s_lan(server,data["user"])
-        print(ip_lan["wg_lan"])
-        all_ips = select_c_ips(server,data["user"])       
-        x = ""
-        for all_ip in all_ips:
-            x = x + str(all_ip["ip"])
-
-        print(x)
-        print(WGkeys())
-        print(user,server)
+    elif request.method == 'POST': # если POST добавляем пользователя в бд
+        ip_lan = select_s_lan(server,data["user"])                 
+        net_list = list(ipaddress.ip_network(ip_lan["wg_lan"]))    
+        del net_list[1],net_list[0],net_list[253]
+        ips = select_c_ips(server,data["user"])                      
+        ip_list=[]
+        for ip in ips:
+           ip_list = ipaddress.ip_address(ip["ip"])
+           net_list.remove(ip_list) 
+        wgkey = WGkeys()
+        dict = {"ip":str(net_list[0]),"name":str(user),"privkey":str(wgkey[0]),"pubkey":str(wgkey[1])}
+        c_json = json.dumps(dict)
+        add_client(server,c_json,data["user"])
+        c_ip = select_c_ip(server,data["user"])
+        subprocess.run(['curl','http://' + c_ip["c_ip"] + ':5000/punch'],stdout=subprocess.PIPE)
         return jsonify({"msg":"ok"})
+
     elif request.method == 'DELETE': # если DELETE
         print(user,server)
         return jsonify({"msg":"ok"})
