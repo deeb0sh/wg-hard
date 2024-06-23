@@ -6,6 +6,8 @@ import psycopg2
 import jwt
 import datetime
 import re
+import subprocess
+import ipaddress
 
 app = Flask(__name__)
 CORS(app)
@@ -52,6 +54,15 @@ def select_s_conf(table,login):
     x = json.loads(x)
     return x[0]
 
+def select_s_lan(table,login):
+    c.execute(f"""
+          select jsonb_build_object('wg_lan', server->'wg_lan') from {table} WHERE id_acc = (SELECT id_acc FROM accounts WHERE login = ('{login}'))
+          """)
+    tmp=c.fetchone()
+    x = json.dumps(tmp)
+    x = json.loads(x)
+    return x[0]
+
 def select_c_conf(table,login,user):
     c.execute(f"""
              SELECT "clients" FROM {table} WHERE id_acc = (SELECT id_acc FROM accounts WHERE login = ('{login}'))
@@ -60,6 +71,22 @@ def select_c_conf(table,login,user):
     x = json.dumps(tmp)
     x = json.loads(x)
     return x[0]
+
+def select_c_ips(table,login):
+    c.execute(f"""
+             SELECT "clients" FROM {table} WHERE id_acc = (SELECT id_acc FROM accounts WHERE login = ('{login}'))
+        """)
+    tmp=c.fetchone()
+    x = json.dumps(tmp)
+    x = json.loads(x)
+    for i in x[0]:
+        del i["pubkey"],i["privkey"],i["name"]
+    return x[0]
+
+def WGkeys():
+    privkey = subprocess.check_output("wg genkey", shell=True).decode("utf-8").strip()
+    pubkey = subprocess.check_output(f"echo '{privkey}' | wg pubkey", shell=True).decode("utf-8").strip()
+    return (privkey, pubkey)
 
 def token_required(f):
     def decorated(*args, **kwargs):
@@ -74,30 +101,6 @@ def token_required(f):
             return jsonify({'error': 'BAD TOKEN'}),403
         return f(*args, **kwargs)
     return decorated
-
-
-# @app.route('/api', methods=['GET'])
-# def cookies_test():
-#     token = request.cookies.get('t')
-#     if token:
-#         data = jwt.decode(token, app.config['secret_key'], algorithms="HS256")
-#         response = jsonify({ 
-#             "name": data['user'],          
-#             "auth": True
-#             })
-#         # response.set_cookie("t", token, max_age=0)
-#         # token = jwt.encode({
-#         #             'user': data['user'] , 
-#         #             'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=86400)
-#         #             }, app.config['secret_key'])
-#         # response.set_cookie("t", value=token, secure=False, httponly=True, max_age=86400)
-#         return response
-#     else:
-#         return jsonify({
-#             "name": "no auth",
-#             "auth": False
-#         })
-
 
 @app.route('/api/login',methods=['POST','OPTIONS'])
 def login():
@@ -126,7 +129,6 @@ def login():
                     "auth": False,
                     })
 
- 
 @app.route("/api/home",endpoint="home" , methods=['GET'])
 @token_required
 def home():
@@ -139,21 +141,22 @@ def home():
     y["clients"] = select("server_ru",data["user"])
     return [x,y]
 
-@app.route("/api/getconf/<string:server>/<string:user>", endpoint="getconf", methods=['GET'])
+@app.route("/api/getconf/<string:server>/<string:user>", endpoint="getconf", methods=['GET','POST','DELETE'])
 @token_required
-def getWGconf(server,user):
-    if server == "ru.darksurf.ru":  # заменить
-        server = "server_ru"        #
-    elif server == "fi.darksurf.ru":#
-        server = "server_fi"        #
-
+def WGconf(server,user):
     token = request.cookies.get('t') 
     data = jwt.decode(token, app.config['secret_key'], algorithms=['HS256'])
-    x = select_s_conf(server,data["user"])
-    y = select_c_conf(server,data["user"],user)
-    for i in y:
-        if i["name"] == user:
-                wg_conf = (f"""
+    if server == "ru.darksurf.ru":  # заменить
+        server = "server_ru"        # нахуй
+    elif server == "fi.darksurf.ru":#
+        server = "server_fi"        #
+    
+    if request.method == 'GET':    # если GET
+        x = select_s_conf(server,data["user"])
+        y = select_c_conf(server,data["user"],user)
+        for i in y:
+            if i["name"] == user:
+                    wg_conf = (f"""
 ### DarkSurf.ru v0.1
 ### user:{user} 
 ### 
@@ -167,22 +170,22 @@ DNS = 45.142.122.244,77.221.159.104
 PublicKey = {x["pubkey"]}
 AllowedIPs = 0.0.0.0/0
 Endpoint = {x["w_host"]}:{x["w_port"]}""") 
-            
-    print(wg_conf)
-    return wg_conf
+        return wg_conf
+    elif request.method == 'POST': # если POST
+        ip_lan = select_s_lan(server,data["user"])
+        print(ip_lan["wg_lan"])
+        all_ips = select_c_ips(server,data["user"])       
+        x = ""
+        for all_ip in all_ips:
+            x = x + str(all_ip["ip"])
 
-# @app.route("/api/logout",endpoint="logout", methods=['GET'])
-# @token_required
-# def logout():
-#     token = request.cookies.get('t')
-#     response = jsonify({ 
-#             "msg": "ok"         
-#             })
-#     response.set_cookie("t", token, max_age=0)
-#     return response    
-    
-
-
+        print(x)
+        print(WGkeys())
+        print(user,server)
+        return jsonify({"msg":"ok"})
+    elif request.method == 'DELETE': # если DELETE
+        print(user,server)
+        return jsonify({"msg":"ok"})
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
