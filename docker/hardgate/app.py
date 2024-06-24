@@ -104,6 +104,13 @@ def add_client(table,c_json,login):
     conn.commit()
     return 0
 
+def delete(table,index,login):
+    c.execute(f"""
+             update {table} set clients = clients - {index} WHERE id_acc = (SELECT id_acc FROM accounts WHERE login = ('{login}'))
+        """)
+    conn.commit()
+    return print("DELETE OK")
+
 def token_required(f):
     def decorated(*args, **kwargs):
         #token = request.headers.get('token')
@@ -167,7 +174,7 @@ def WGconf(server,user):
     elif server == "fi.darksurf.ru":#
         server = "server_fi"        #
     
-    if request.method == 'GET':    # если GET
+    if request.method == 'GET':    # если GET генерируем конфиг
         x = select_s_conf(server,data["user"])
         y = select_c_conf(server,data["user"],user)
         for i in y:
@@ -205,8 +212,13 @@ Endpoint = {x["w_host"]}:{x["w_port"]}""")
         return jsonify({"msg":"ok"})
 
     elif request.method == 'DELETE': # если DELETE
-        print(user,server)
+        resp = select(server,data["user"])
+        for i,x in enumerate(resp):
+            if x["name"] == user:
+                    delete(server,i,data["user"])
+                    c_ip = select_c_ip(server,data["user"])
+                    subprocess.run(['curl','http://' + c_ip["c_ip"] + ':5000/punch'],stdout=subprocess.PIPE)
         return jsonify({"msg":"ok"})
-
+        
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
