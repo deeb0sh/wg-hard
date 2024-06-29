@@ -8,6 +8,7 @@ import datetime
 import re
 import subprocess
 import ipaddress
+from flask_parameter_validation import ValidateParameters, Json
 
 app = Flask(__name__)
 CORS(app)
@@ -32,9 +33,14 @@ def select(table,login):
     tmp=c.fetchone()
     x = json.dumps(tmp)
     x = json.loads(x)
-    for i in x[0]:
-        del i["pubkey"],i["privkey"]
-    return x[0]
+    if x != {}:                                     #
+        for i in x[0]:                              #
+            del i["pubkey"],i["privkey"]            #
+        return x[0]                                 #
+    else:                                           #
+        x = "nousers"                               #
+        print(x)
+        return x                                    #
     
 def select_serv(table,login):
     c.execute(f"""
@@ -126,7 +132,14 @@ def token_required(f):
     return decorated
 
 @app.route('/api/login',methods=['POST','OPTIONS'])
-def login():
+@ValidateParameters()
+def login(
+    usr: str = Json(
+        min_str_length = 3,
+        max_str_length = 10,
+        pattern = r"" #regex
+    )
+    ):
     data = request.get_json()
     name = data["usr"]
     password = data["passwd"]
@@ -171,7 +184,7 @@ def WGconf(server,user):
     data = jwt.decode(token, app.config['secret_key'], algorithms=['HS256'])
     if server == "ru.darksurf.ru":  # заменить
         server = "server_ru"        # нахуй
-    elif server == "fi.darksurf.ru":#
+    elif server == "fi.darksurf.ru":# REGEX
         server = "server_fi"        #
     
     if request.method == 'GET':    # если GET генерируем конфиг
