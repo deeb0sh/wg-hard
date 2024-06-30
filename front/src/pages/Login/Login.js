@@ -24,7 +24,7 @@ import {
 } from "@coreui/react";
 import CIcon from "@coreui/icons-react";
 import { cilLockLocked, cilUser } from "@coreui/icons";
-import ForgottenImage from "../assets/pacany.jpg";
+import ForgottenImage from "../../assets/pacany.jpg";
 
 const Login = () => {
   const [isShowModal, setShowModal] = useState(false);

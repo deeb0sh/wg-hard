@@ -1,0 +1,65 @@
+[
+    {
+        "w_host": "fi.darksurf.ru",
+        "clients": [
+            {
+                "name": "Ivan",
+                "ip": "10.40.0.4"
+            },
+            {
+                "name": "Petr",
+                "ip": "10.40.0.5"
+            },
+            {
+                "name": "Feofan",
+                "ip": "10.40.0.56"
+            },
+            {
+                "name": "Anatoliy",
+                "ip": "10.40.0.123"
+            },
+            {
+                "name": "Ibragim",
+                "ip": "10.40.0.78"
+            }
+        ]
+    },
+    {
+        "w_host": "gh.darksurf.ru",
+        "clients": [
+            {
+                "name": "Marfa",
+                "ip": "10.50.0.5"
+            },
+            {
+                "name": "Tanya",
+                "ip": "10.50.0.78"
+            },
+            {
+                "name": "Tosya",
+                "ip": "10.50.0.75"
+            },
+            {
+                "name": "Karina",
+                "ip": "10.50.0.156"
+            }
+        ]
+    },
+    {
+        "w_host": "wag.darksurfr.ru",
+        "clients": [
+            {
+                "name": "Mikola",
+                "ip": "10.40.23.4"
+            },
+            {
+                "name": "Leonid",
+                "ip": "10.40.23.55"
+            },
+            {
+                "name": "Pavel",
+                "ip": "10.40.23.46"
+            }
+        ]
+    }
+]
