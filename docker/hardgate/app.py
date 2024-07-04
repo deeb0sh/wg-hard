@@ -138,6 +138,11 @@ def login(
         min_str_length = 3,
         max_str_length = 10,
         pattern = r"" #regex
+    ),
+    passwd: str = Json(
+        min_str_length = 3,
+        max_str_length = 20,
+        pattern = r"" #regex
     )
     ):
     data = request.get_json()
