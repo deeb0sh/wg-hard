@@ -1,31 +1,34 @@
-#version: '3.7'
+#
+# Сначало в ручную 
+#   #docker build -t hardunit:v1 .
+#
+
 services:
-  wghard:
-    container_name: deebosh-hard # похуй
-    build: .
+  deebosh-hard:  
+    image: hardunit:v1    
+    container_name: (cont_name) # поф
     restart: always
       #volumes:
       #- ./wg:/etc/wireguard
       #- ./app:/app
     environment:
-      LOGIN: deebosh  # логин пользователя
-      W_PORT: 31337   # Порт для конфига клиета
+      LOGIN: (login)  # логин пользователя
+      W_PORT: (port)   # Порт для конфига клиета
       W_HOST: fi.darksurf.ru  # wg-хост
       DATABASE: ${DATABASE}  # база данных 
       WG_LAN: '10.7.0.0/24' # ЛАН wg
-      TABLE: server_fi # таблица бд
     cap_add:
       - NET_ADMIN
       - SYS_ADMIN
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
       - net.ipv4.ip_forward=1
+#      - net.ipv4.conf.eth0.route_localnet=1
     networks:
       - hard_net
-        #  ipv4_address: 172.72.0.2
+        #  ipv4_address: 172.31.0.2
     ports:
-      - 77.221.159.104:31337:51820/udp
-        # - 0.0.0.0:5000:5000/tcp 
+      - 77.221.159.104:(port):51820/udp # PORT
 networks:
   hard_net:
     name: hard_net
@@ -37,5 +40,6 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 172.12.0.0/16
-          gateway: 172.12.0.1
+        - subnet: 172.31.0.0/16
+          gateway: 172.31.0.1
+
