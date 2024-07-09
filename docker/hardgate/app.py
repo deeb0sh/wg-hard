@@ -132,19 +132,20 @@ def token_required(f):
     return decorated
 
 @app.route('/api/login',methods=['POST','OPTIONS'])
-@ValidateParameters()
-def login(
-    usr: str = Json(
-        min_str_length = 3,
-        max_str_length = 10,
-        pattern = r"" #regex
-    ),
-    passwd: str = Json(
-        min_str_length = 3,
-        max_str_length = 20,
-        pattern = r"" #regex
-    )
-    ):
+# @ValidateParameters()
+# def login(
+#     usr: str = Json(
+#         min_str_length = 3,
+#         max_str_length = 10,
+#         pattern = r"" #regex
+#     ),
+#     passwd: str = Json(
+#         min_str_length = 3,
+#         max_str_length = 20,
+#         pattern = r"" #regex
+#     )
+#     ):
+def login():
     data = request.get_json()
     name = data["usr"]
     password = data["passwd"]
