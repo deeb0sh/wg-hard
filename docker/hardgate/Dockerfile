@@ -5,6 +5,6 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 RUN apk add wireguard-tools curl
-COPY . .
-
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
+COPY app.py app.py
+EXPOSE 5000
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "app:app"]

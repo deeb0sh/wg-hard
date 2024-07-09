@@ -1,0 +1,13 @@
+#  .env
+# KEY=''
+# DATABASE='postgresql://username:password@ip:port/db-name'
+#
+#
+services:
+  hardgate:
+    build: .
+    container_name: hardgate
+    restart: always
+    environment:
+      DATABASE: ${DATABASE} # .env
+    
