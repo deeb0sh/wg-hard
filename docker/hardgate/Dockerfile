@@ -2,9 +2,21 @@ FROM python:3.9-alpine
 
 WORKDIR /app
 
-COPY requirements.txt requirements.txt
-RUN pip3 install -r requirements.txt
+ENV PYTHONDONTWRITEBYTECODE 1
+
+ENV PYTHONUNBUFFERED 1
+
+RUN pip install --root-user-action=ignore -U pip
+
+COPY ./requirements.txt .
+
+COPY ./app.py .
+
+COPY ./.env .
+
+RUN pip install --root-user-action=ignore -r requirements.txt
+
 RUN apk add wireguard-tools curl
-COPY app.py app.py
-EXPOSE 5000
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+
+EXPOSE 5050
+

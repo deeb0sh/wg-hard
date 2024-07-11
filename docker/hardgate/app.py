@@ -4,6 +4,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 import psycopg2
 import jwt
+#from flask_jwt import JWT
 import datetime
 import re
 import subprocess
@@ -18,6 +19,7 @@ CORS(app)
 # DATABASE=''
 load_dotenv()
 url_db = os.getenv("DATABASE")
+#app.config['secret_key'] = 'AafgHAehae5hbdrh'
 app.config['secret_key'] = os.getenv("KEY")
 
 try:

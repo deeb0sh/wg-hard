@@ -8,6 +8,8 @@ services:
     build: .
     container_name: hardgate
     restart: always
+      #command: python app.py
+    command: gunicorn -w 1 -b 0.0.0.0:5050 app:app
     environment:
       DATABASE: ${DATABASE} # .env
     
