@@ -4,9 +4,9 @@
 #
 
 services:
-  deebosh-hard:  
+  login-hard:  # сменить
     image: hardunit:v1    
-    container_name: (cont_name) # поф
+    container_name: (name) # поф
     restart: always
       #volumes:
       #- ./wg:/etc/wireguard
@@ -17,6 +17,7 @@ services:
       W_HOST: ru.darksurf.ru  # wg-хост
       DATABASE: ${DATABASE}  # база данных 
       WG_LAN: '10.8.0.0/24' # ЛАН wg
+      TABLE: server_ru
     cap_add:
       - NET_ADMIN
       - SYS_ADMIN
@@ -28,7 +29,7 @@ services:
       - hard_net
         #  ipv4_address: 172.30.0.2
     ports:
-      - 45.142.122.244:(port):51820/udp # PORT
+      - 45.142.122.244:(P O R T):51820/udp # PORT
 networks:
   hard_net:
     name: hard_net

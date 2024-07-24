@@ -17,6 +17,7 @@ services:
       W_HOST: fi.darksurf.ru  # wg-хост
       DATABASE: ${DATABASE}  # база данных 
       WG_LAN: '10.7.0.0/24' # ЛАН wg
+      TABLE: server_fi
     cap_add:
       - NET_ADMIN
       - SYS_ADMIN
