@@ -1,6 +1,8 @@
 import os
-from flask import Flask, jsonify, request, json
+from flask import Flask, jsonify, request, json ,send_file
 from flask_cors import CORS
+import qrcode
+from io import BytesIO
 from dotenv import load_dotenv
 import psycopg2
 import jwt
@@ -185,7 +187,7 @@ def home():
     y["clients"] = select("server_ru",data["user"])
     return [x,y]
 
-@app.route("/api/getconf/<string:server>/<string:user>", endpoint="getconf", methods=['GET','POST','DELETE'])
+@app.route("/api/getconf/<string:server>/<string:user>", endpoint="getconf", methods=['GET','POST','DELETE','PATCH'])
 @token_required
 def WGconf(server,user):
     token = request.cookies.get('t') 
@@ -195,7 +197,7 @@ def WGconf(server,user):
     elif server == "fi.darksurf.ru":# REGEX
         server = "server_fi"        #
     
-    if request.method == 'GET':    # если GET генерируем конфиг
+    if request.method == 'GET' or request.method == 'PATCH':    # если PATCH генерируем конфиг или GET то qrcode
         x = select_s_conf(server,data["user"])
         y = select_c_conf(server,data["user"],user)
         for i in y:
@@ -214,7 +216,17 @@ DNS = 45.142.122.244,77.221.159.104
 PublicKey = {x["pubkey"]}
 AllowedIPs = 0.0.0.0/0
 Endpoint = {x["w_host"]}:{x["w_port"]}""") 
-        return wg_conf
+                    if request.method == 'PATCH':
+                        return wg_conf
+                    else:
+                        buffer = BytesIO()
+                        img = qrcode.make(wg_conf)
+                        img.save(buffer)
+                        buffer.seek(0)
+                        response = send_file(buffer, mimetype='image/png')
+                        return response
+
+                            
     elif request.method == 'POST': # если POST добавляем пользователя в бд
         ip_lan = select_s_lan(server,data["user"])                 
         net_list = list(ipaddress.ip_network(ip_lan["wg_lan"]))    
@@ -240,6 +252,7 @@ Endpoint = {x["w_host"]}:{x["w_port"]}""")
                     c_ip = select_c_ip(server,data["user"])
                     subprocess.run(['curl','http://' + c_ip["c_ip"] + ':5000/punch'],stdout=subprocess.PIPE)
         return jsonify({"msg":"ok"})
-        
+
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
