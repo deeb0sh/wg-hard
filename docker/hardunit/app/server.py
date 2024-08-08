@@ -1,6 +1,7 @@
 import os
 import psycopg2
-from flask import Flask, jsonify, json
+from flask import Flask, jsonify, json, Response
+import time
 import ipaddress
 from waitress import serve
 import subprocess
@@ -83,8 +84,18 @@ def punch():
     subprocess.run(["/app/wg_reload.sh"]) # wg syncconf wg0 <(wg-quick strip wg0) перечитать конфиг
     return jsonify({"msg":"ok"})
 
+@app.route('/stream')
+def stream():
+    def gen():
+       while True:
+          time.sleep(2)
+          x = subprocess.run(["/app/wg_stream.sh"], shell=True, stdout=subprocess.PIPE, encoding='utf-8')
+          yield str(x.stdout)
+
+    return Response(gen(), mimetype='text/plain')
+  
 
 if __name__ == "__main__":
-  serve(app, host='0.0.0.0', port=5000)
-  #app.run(debug=True, host='0.0.0.0', port=5000) # dev mode
+  #serve(app, host='0.0.0.0', port=5000)
+  app.run(debug=True, host='0.0.0.0', port=5000) # dev mode
    
