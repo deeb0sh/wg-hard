@@ -84,12 +84,13 @@ def punch():
     subprocess.run(["/app/wg_reload.sh"]) # wg syncconf wg0 <(wg-quick strip wg0) перечитать конфиг
     return jsonify({"msg":"ok"})
 
+######### стрим
 @app.route('/stream')
 def stream():
     def gen():
        while True:
-          time.sleep(2)
-          x = subprocess.run(["/app/wg_stream.sh"], shell=True, stdout=subprocess.PIPE, encoding='utf-8')
+          time.sleep(5)
+          x = subprocess.run(["/app/wg_stats.sh"], shell=True, stdout=subprocess.PIPE, encoding='utf-8')
           yield str(x.stdout)
 
     return Response(gen(), mimetype='text/plain')
