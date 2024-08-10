@@ -1,7 +1,8 @@
 import os
-from flask import Flask, jsonify, request, json ,send_file
+from flask import Flask, jsonify, request, json ,send_file, Response
 from flask_cors import CORS
 import qrcode
+import requests
 from io import BytesIO
 from dotenv import load_dotenv
 import psycopg2
@@ -252,6 +253,25 @@ Endpoint = {x["w_host"]}:{x["w_port"]}""")
                     c_ip = select_c_ip(server,data["user"])
                     subprocess.run(['curl','http://' + c_ip["c_ip"] + ':5000/punch'],stdout=subprocess.PIPE)
         return jsonify({"msg":"ok"})
+
+
+
+@app.route("/api/stream",endpoint="stream" , methods=['GET'])
+@token_required
+def stream():
+    # прокси апи , статистика
+    token = request.cookies.get('t') 
+    data = jwt.decode(token, app.config['secret_key'], algorithms=['HS256'])
+    login = data["user"]
+
+    url = "http://172.31.0.2:5000/stream"
+    response = requests.get(url, stream=True)
+    def generator():
+        for line in response.iter_lines():
+            yield(line)
+    return Response(generator(), mimetype='text/plain')
+
+    
 
 
 if __name__ == '__main__':
