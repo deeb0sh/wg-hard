@@ -255,21 +255,13 @@ Endpoint = {x["w_host"]}:{x["w_port"]}""")
         return jsonify({"msg":"ok"})
 
 
-
-@app.route("/api/stream",endpoint="stream" , methods=['GET'])
-@token_required
-def stream():
-    # прокси апи , статистика
-    token = request.cookies.get('t') 
-    data = jwt.decode(token, app.config['secret_key'], algorithms=['HS256'])
-    login = data["user"]
-
-    url = "http://172.31.0.2:5000/stream"
-    response = requests.get(url, stream=True)
-    def generator():
-        for line in response.iter_lines():
-            yield(line)
-    return Response(generator(), mimetype='text/plain')
+@app.route("/api/stats",endpoint="stats" , methods=['GET'])
+#@token_required
+def stats():
+    url = "http://172.31.0.2:5000/stats"
+    response = requests.get(url)
+    line = response.iter_content()
+    return Response(line)
 
     
 

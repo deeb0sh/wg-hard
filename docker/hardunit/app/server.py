@@ -1,7 +1,6 @@
 import os
 import psycopg2
-from flask import Flask, jsonify, json, Response
-import time
+from flask import Flask, jsonify, json
 import ipaddress
 from waitress import serve
 import subprocess
@@ -84,19 +83,29 @@ def punch():
     subprocess.run(["/app/wg_reload.sh"]) # wg syncconf wg0 <(wg-quick strip wg0) перечитать конфиг
     return jsonify({"msg":"ok"})
 
-######### стрим
-@app.route('/stream',endpoint="stream" , methods=['GET'])
-def stream():
-    def gen():
-       while True:
-          time.sleep(2)
-          x = subprocess.run(["/app/wg_stats.sh"], shell=True, stdout=subprocess.PIPE, encoding='utf-8')
-          yield str(x.stdout)
 
-    return Response(gen(), mimetype='text/plain')
+######### stat
+@app.route('/stats',endpoint="stats" , methods=['GET'])
+def stream():
+    x = os.popen("/app/wg_stats.sh").readlines()[0].strip("\n")
+    x = x.rstrip(',')
+    x = "[" + x + "]"
+    return x
+
+
+######### стрим залупа
+# @app.route('/stream',endpoint="stream" , methods=['GET'])
+# def stream():
+#     def gen():
+#        while True:
+#           time.sleep(2)
+#           x = subprocess.run(["/app/wg_stats.sh"], shell=True, stdout=subprocess.PIPE, encoding='utf-8')
+#           yield str(x.stdout)
+
+#     return Response(gen(), mimetype='text/plain')
   
 
 if __name__ == "__main__":
-  #serve(app, host='0.0.0.0', port=5000)
-  app.run(debug=True, host='0.0.0.0', port=5000) # dev mode
+  serve(app, host='0.0.0.0', port=5000)
+  #app.run(debug=True, host='0.0.0.0', port=5000) # dev mode
    
