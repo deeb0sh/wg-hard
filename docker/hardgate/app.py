@@ -46,7 +46,7 @@ def select(table,login):
         x = "nousers"                               #
         print(x)
         return x                                    #
-    
+
 def select_serv(table,login):
     c.execute(f"""
           select jsonb_build_object('w_host', server->'w_host','clients', '') from {table} WHERE id_acc = (SELECT id_acc FROM accounts WHERE login = ('{login}'))
@@ -140,12 +140,12 @@ def token_required(f):
 @ValidateParameters()
 def login(
      usr: str = Json(
-         min_str_length = 3,
+         min_str_length = 1,
         max_str_length = 10,
         pattern = r"" #regex
     ),
     passwd: str = Json(
-        min_str_length = 3,
+        min_str_length = 1,
         max_str_length = 20,
         pattern = r"" #regex
     )
@@ -163,7 +163,7 @@ def login(
             if res:
                 token = jwt.encode({
                     'user': name , 
-                    'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=86400)
+                    'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=3600)
                     }, app.config['secret_key'])
                 response = jsonify({
                     "auth": True,
@@ -205,6 +205,8 @@ def WGconf(server,user):
             if i["name"] == user:
                     wg_conf = (f"""
 ### DarkSurf.ru v0.1
+### МАНДУЛЯТОР 3000
+### ebosh-product                               
 ### user:{user} 
 ### 
                           
@@ -254,17 +256,27 @@ Endpoint = {x["w_host"]}:{x["w_port"]}""")
                     subprocess.run(['curl','http://' + c_ip["c_ip"] + ':5000/punch'],stdout=subprocess.PIPE)
         return jsonify({"msg":"ok"})
 
-
 @app.route("/api/stats",endpoint="stats" , methods=['GET'])
-#@token_required
+@token_required
 def stats():
-    url = "http://172.31.0.2:5000/stats"
-    response = requests.get(url)
-    line = response.iter_content()
-    return Response(line)
-
-    
-
+    token = request.cookies.get('t') 
+    data = jwt.decode(token, app.config['secret_key'], algorithms=['HS256'])
+    login = data["user"]
+    ip_ru = select_c_ip("server_ru",login)
+    ip_fi = select_c_ip("server_fi",login)
+    ip_ru = ip_ru["c_ip"]
+    ip_fi = ip_fi["c_ip"]
+    url_ru = f"http://{ip_ru}:5000/stats"
+    url_fi = f"http://{ip_fi}:5000/stats"
+    res_fi = requests.get(url_fi)
+    res_ru = requests.get(url_ru)
+    res_fi = res_fi.json()
+    res_ru = res_ru.json()
+    res_fi = json.dumps({'clients_fi' : res_fi})
+    res_ru = json.dumps({'clients_ru' : res_ru})
+    line =f"""[{res_fi},{res_ru}]"""
+    line = json.loads(line)
+    return line
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
