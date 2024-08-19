@@ -137,20 +137,20 @@ def token_required(f):
     return decorated
 
 @app.route('/api/login',methods=['POST','OPTIONS'])
-@ValidateParameters()
-def login(
-     usr: str = Json(
-         min_str_length = 1,
-        max_str_length = 10,
-        pattern = r"" #regex
-    ),
-    passwd: str = Json(
-        min_str_length = 1,
-        max_str_length = 20,
-        pattern = r"" #regex
-    )
-    ):
-#def login():
+# @ValidateParameters()
+# def login(
+#      usr: str = Json(
+#          min_str_length = 1,
+#         max_str_length = 10,
+#         pattern = r"" #regex
+#     ),
+#     passwd: str = Json(
+#         min_str_length = 1,
+#         max_str_length = 20,
+#         pattern = r"" #regex
+#     )
+#     ):
+def login():
     data = request.get_json()
     name = data["usr"]
     password = data["passwd"]
@@ -256,27 +256,27 @@ Endpoint = {x["w_host"]}:{x["w_port"]}""")
                     subprocess.run(['curl','http://' + c_ip["c_ip"] + ':5000/punch'],stdout=subprocess.PIPE)
         return jsonify({"msg":"ok"})
 
-@app.route("/api/stats",endpoint="stats" , methods=['GET'])
-@token_required
-def stats():
-    token = request.cookies.get('t') 
-    data = jwt.decode(token, app.config['secret_key'], algorithms=['HS256'])
-    login = data["user"]
-    ip_ru = select_c_ip("server_ru",login)
-    ip_fi = select_c_ip("server_fi",login)
-    ip_ru = ip_ru["c_ip"]
-    ip_fi = ip_fi["c_ip"]
-    url_ru = f"http://{ip_ru}:5000/stats"
-    url_fi = f"http://{ip_fi}:5000/stats"
-    res_fi = requests.get(url_fi)
-    res_ru = requests.get(url_ru)
-    res_fi = res_fi.json()
-    res_ru = res_ru.json()
-    res_fi = json.dumps({'clients_fi' : res_fi})
-    res_ru = json.dumps({'clients_ru' : res_ru})
-    line =f"""[{res_fi},{res_ru}]"""
-    line = json.loads(line)
-    return line
+# @app.route("/api/stats",endpoint="stats" , methods=['GET'])
+# @token_required
+# def stats():
+#     token = request.cookies.get('t') 
+#     data = jwt.decode(token, app.config['secret_key'], algorithms=['HS256'])
+#     login = data["user"]
+#     ip_ru = select_c_ip("server_ru",login)
+#     ip_fi = select_c_ip("server_fi",login)
+#     ip_ru = ip_ru["c_ip"]
+#     ip_fi = ip_fi["c_ip"]
+#     url_ru = f"http://{ip_ru}:5000/stats"
+#     url_fi = f"http://{ip_fi}:5000/stats"
+#     res_fi = requests.get(url_fi)
+#     res_ru = requests.get(url_ru)
+#     res_fi = res_fi.json()
+#     res_ru = res_ru.json()
+#     res_fi = json.dumps({'clients_fi' : res_fi})
+#     res_ru = json.dumps({'clients_ru' : res_ru})
+#     line =f"""[{res_fi},{res_ru}]"""
+#     line = json.loads(line)
+#     return line
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
