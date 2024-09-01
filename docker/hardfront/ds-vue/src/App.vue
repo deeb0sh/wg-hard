@@ -146,7 +146,6 @@ methods: {
      this.cook =  VueCookies.get('t')
      if (this.cook) {
         this.auth.auth = true
-        this.getStats()
         this.getWG()
       }
   },

@@ -73,6 +73,7 @@ config() # ЧИИИИИИИИИИИИИИИИККККК!
 
 os.chmod("/etc/wireguard/wg0.conf",0o600) # чик
 subprocess.run(["wg-quick", "up", "wg0"]) # ОПА!!!!!!!
+subprocess.run(["ssserver","-U","--server-addr","0.0.0.0:8388","--encrypt-method","aes-256-gcm","--password","qweqwe1"])
 
 ###### 
 
