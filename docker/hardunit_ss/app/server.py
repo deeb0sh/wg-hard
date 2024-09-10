@@ -41,8 +41,9 @@ PostUp = iptables -t nat -A POSTROUTING -s {wg_lan} -o eth0 -j MASQUERADE; iptab
 
 def ss_config():
     ss_conf = select("ss_serv",table, login)
-    with open("/app/config.json","w") as file:
-        file.write(ss_conf) # ХУЯКС!
+    print(ss_conf)
+    #with open("/app/config.json","w") as file:
+    #    file.write(ss_conf) # ХУЯКС!
     return 0
 
 # ifconfig eth0 | grep inet | awk -F: '{print $2}'| awk '{print $1}') 
