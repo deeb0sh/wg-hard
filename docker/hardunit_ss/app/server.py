@@ -39,6 +39,12 @@ PostUp = iptables -t nat -A POSTROUTING -s {wg_lan} -o eth0 -j MASQUERADE; iptab
         file.write(wg0_conf) # ЧИИИК!!
     return 0
 
+def ss_config():
+    ss_conf = select("ss_serv",table, login)
+    with open("/app/config.json","w") as file:
+        file.write(ss_conf) # ХУЯКС!
+    return 0
+
 # ifconfig eth0 | grep inet | awk -F: '{print $2}'| awk '{print $1}') 
 ip = subprocess.run(["/app/c_ip.sh"],capture_output=True, text=True) # чииииик !!!
 c_ip = ip.stdout
@@ -70,6 +76,7 @@ wg_gateway = ipaddress.ip_network(wg_lan) # чиик !!!
 update("server",table,s_conf,login) # ХОП !
 
 config() # ЧИИИИИИИИИИИИИИИИККККК!
+ss_config()
 
 os.chmod("/etc/wireguard/wg0.conf",0o600) # чик
 subprocess.run(["wg-quick", "up", "wg0"]) # ОПА!!!!!!!
