@@ -42,8 +42,8 @@ PostUp = iptables -t nat -A POSTROUTING -s {wg_lan} -o eth0 -j MASQUERADE; iptab
 def ss_config():
     ss_conf = select("ss_serv",table, login)
     print(ss_conf)
-    #with open("/app/config.json","w") as file:
-    #    file.write(ss_conf) # ХУЯКС!
+    with open("/etc/config.json","w") as file:
+        file.write(ss_conf) # ХУЯКС!
     return 0
 
 # ifconfig eth0 | grep inet | awk -F: '{print $2}'| awk '{print $1}') 
@@ -81,7 +81,7 @@ ss_config()
 
 os.chmod("/etc/wireguard/wg0.conf",0o600) # чик
 subprocess.run(["wg-quick", "up", "wg0"]) # ОПА!!!!!!!
-subprocess.run(["ssserver","-c","/app/config.json","-d"]) # запуск сервера shadowsocks-rust
+subprocess.run(["ssserver","-c","/etc/config.json","-d"]) # запуск сервера shadowsocks-rust
 
 ###### 
 
