@@ -12,6 +12,7 @@ import datetime
 import re
 import subprocess
 import ipaddress
+import base64
 from flask_parameter_validation import ValidateParameters, Json
 
 app = Flask(__name__)
@@ -59,6 +60,15 @@ def select_serv(table,login):
 def select_s_conf(table,login):
     c.execute(f"""
           select jsonb_build_object('w_host', server->'w_host','pubkey', server->'pubkey','w_port', server->'w_port') from {table} WHERE id_acc = (SELECT id_acc FROM accounts WHERE login = ('{login}'))
+          """)
+    tmp=c.fetchone()
+    x = json.dumps(tmp)
+    x = json.loads(x)
+    return x[0]
+
+def select_ss_wport(table,login):
+    c.execute(f"""
+          select jsonb_build_object('w_port', server->'w_port','w_host', server->'w_host') from {table} WHERE id_acc = (SELECT id_acc FROM accounts WHERE login = ('{login}'))
           """)
     tmp=c.fetchone()
     x = json.dumps(tmp)
@@ -114,6 +124,14 @@ def add_client(table,c_json,login):
         """)
     conn.commit()
     return 0
+
+def select_ss(table,login):
+    c.execute(f"""
+             SELECT "ss_serv" FROM {table} WHERE id_acc = (SELECT id_acc FROM accounts WHERE login = ('{login}'))
+        """)
+    tmp = c.fetchone()
+    #tmp = json.dumps(tmp)
+    return tmp
 
 def delete(table,index,login):
     c.execute(f"""
@@ -179,7 +197,7 @@ def login(
 @app.route("/api/home",endpoint="home" , methods=['GET'])
 @token_required
 def home():
-    # тут личный кабинет и параментры для конфигов клиентов
+    # опа ча
     token = request.cookies.get('t') 
     data = jwt.decode(token, app.config['secret_key'], algorithms=['HS256'])
     x=select_serv("server_fi",data["user"])
@@ -187,6 +205,33 @@ def home():
     y=select_serv("server_ru",data["user"])
     y["clients"] = select("server_ru",data["user"])
     return [x,y]
+
+@app.route ("/api/getsocks", endpoint="getsocks", methods=['GET'])
+@token_required
+def SSconf():
+    token = request.cookies.get('t') 
+    data = jwt.decode(token, app.config['secret_key'], algorithms=['HS256'])
+    login = data["user"]
+    # ss_fi
+    conf_ss_fi = select_ss("server_fi",login)
+    ss_port = select_ss_wport("server_fi",login)
+    port = int(ss_port["w_port"]) + 1000
+    ss_fi = f"""{conf_ss_fi[0]["method"]}:{conf_ss_fi[0]["password"]}@{ss_port["w_host"]}:{str(port)}"""
+    ss_fi = base64.b64encode(ss_fi.encode('utf-8'))
+    ss_fi = ss_fi.decode('utf-8')
+    # ss_ru
+    conf_ss_ru = select_ss("server_ru",login)
+    ss_port = select_ss_wport("server_ru",login)
+    port = int(ss_port["w_port"]) + 1000
+    ss_ru = f"""{conf_ss_ru[0]["method"]}:{conf_ss_ru[0]["password"]}@{ss_port["w_host"]}:{str(port)}"""
+    ss_ru = base64.b64encode(ss_ru.encode('utf-8'))
+    ss_ru = ss_ru.decode('utf-8')
+    socks = {
+        "ss_fi": str(ss_fi),
+        "ss_ru": str(ss_ru)
+        }
+    
+    return jsonify(socks)
 
 @app.route("/api/getconf/<string:server>/<string:user>", endpoint="getconf", methods=['GET','POST','DELETE','PATCH'])
 @token_required
@@ -198,7 +243,8 @@ def WGconf(server,user):
     elif server == "fi.darksurf.ru":# REGEX
         server = "server_fi"        #
     
-    if request.method == 'GET' or request.method == 'PATCH':    # если PATCH генерируем конфиг или GET то qrcode
+    if request.method == 'GET' or request.method == 'PATCH':    # если PATCH генерируем конфиг или GET т
+        qrcode
         x = select_s_conf(server,data["user"])
         y = select_c_conf(server,data["user"],user)
         for i in y:
