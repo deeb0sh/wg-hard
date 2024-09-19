@@ -62,25 +62,25 @@
                         ShadowSocks
                   </div>
             </div>      
-            <div class="clients">
+            <div class="clients">&#160&#160
                   <div>
-                        &#160&#160<img src="./img/fin.png" width="20px">
-                  </div>&#160
+                        <img src="./img/fin.png" width="20px">
+                  </div>&#160&#160
                   <div class="ss" id="ss_fi">
                         ss://{{ ss.ss_fi }}#DarkSurf[Fi]
                   </div>
-                  <div class="cp">
+                  <div>
                         <a @click="copySS('ss_fi')"><img src="./img/cp.png"></a>
                   </div>&#160
             </div>
-            <div class="clients">
+            <div class="clients">&#160&#160
                   <div>
-                        &#160&#160<img src="./img/rus.png" width="20px"> 
-                  </div>&#160
+                        <img src="./img/rus.png" width="20px"> 
+                  </div>&#160&#160
                   <div class="ss" id="ss_ru">
                         ss://{{ ss.ss_ru }}#DarkSurf[Ru]
                   </div>
-                  <div class="cp">
+                  <div>
                         <a @click="copySS('ss_ru')"><img src="./img/cp.png"></a>
                   </div>&#160
             </div>
