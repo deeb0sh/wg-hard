@@ -39,7 +39,7 @@
                   <div>
                         <img src="./img/rus.png" width="35px">
                         &#160WireGuard Москва&#160
-                        <img src="./img/no1.png" width="23px" alt="MMTC-9, DPi-контроль, блокировка РосКомНадзора">
+                        <font color="red" size="1">[obfs]</font>
                   </div>
                   <div>
                         <button class="btn" @click="setWGconf(wg[1].w_host)">Создать</button>
@@ -56,6 +56,34 @@
                         <a @click="delWGconf(wg[1].w_host,key.name)"><img src="./img/del.png" width="20px"></a>&#160&#160
                   </div>
             </div>
+            <div class="wg">
+                  <div>
+                        <img src="./img/ss.svg" width="20px">
+                        ShadowSocks
+                  </div>
+            </div>      
+            <div class="clients">
+                  <div>
+                        &#160&#160<img src="./img/fin.png" width="20px">
+                  </div>&#160
+                  <div class="ss" id="ss_fi">
+                        ss://{{ ss.ss_fi }}#DarkSurf[Fi]
+                  </div>
+                  <div class="cp">
+                        <a @click="copySS('ss_fi')"><img src="./img/cp.png"></a>
+                  </div>&#160
+            </div>
+            <div class="clients">
+                  <div>
+                        &#160&#160<img src="./img/rus.png" width="20px"> 
+                  </div>&#160
+                  <div class="ss" id="ss_ru">
+                        ss://{{ ss.ss_ru }}#DarkSurf[Ru]
+                  </div>
+                  <div class="cp">
+                        <a @click="copySS('ss_ru')"><img src="./img/cp.png"></a>
+                  </div>&#160
+            </div>
       </div>
       <div class="footer">
             <span>&copy; 2024 ebosh-product</span>
@@ -68,7 +96,7 @@
                   <span>DARKSURF.RU</span>
             </div>
             <div>      
-                  <img src="./img/fan.gif" width="350px" style="border-radius: 10px;">
+                  <img src="./img/4as.gif" width="125px" style="border-radius: 10px;">
             </div>
             <div>
                   <font style="font-family:HHCyr;font-size: 30px">МАНДУЛЯТОР 3000</font>
@@ -94,6 +122,7 @@
 </template>
 <script>
 import VueCookies from 'vue-cookies'
+
 export default {
 created() {
       document.title = "DarkSurf.ru" 
@@ -113,6 +142,7 @@ data() {
       wg: null,
       wgconf: {},
       stats: null,
+      ss : null,
       imgConn: "./img/conn2.png",
       };
 },
@@ -135,7 +165,7 @@ methods: {
       this.auth = data
       if (data.auth == true) {
           VueCookies.set('t' ,data.t, "1h")
-          this.getWG()
+          this.getSocks()
       } 
         else {
            this.error = "Пользователь не найден"
@@ -146,7 +176,7 @@ methods: {
      this.cook =  VueCookies.get('t')
      if (this.cook) {
         this.auth.auth = true
-        this.getWG()
+        this.getSocks()
       }
   },
   closeQR() {
@@ -156,11 +186,25 @@ methods: {
       VueCookies.remove("t")
       window.location.reload()
   },
+  handler(e) {
+      const text = e.target.innerText
+      alert(text)
+      navigator.clipboard.writeText("Copy Clipboard");
+  },
+  copySS(x) {
+      const range = document.createRange();
+      range.selectNode(document.getElementById(x));
+      window.getSelection().removeAllRanges(); // clear current selection
+      window.getSelection().addRange(range); // to select text
+      document.execCommand("copy");
+      window.getSelection().removeAllRanges();// to deselect
+      alert("скопировано в буфер")
+  },
   async getWG() {
       const response = await fetch("/api/home")
       const data = await response.json()
       this.wg = data
-      this.getStats()  
+      this.getStats()
   },
   async getQR(server,user) {
       this.dialog = true
@@ -194,13 +238,19 @@ methods: {
       const data = await response.json()
       this.getWG()
   },
+  async getSocks() {
+      const response = await fetch("/api/getsocks")
+      const data = await response.json()
+      this.ss = data
+      this.getWG()
+  },
   async getStats() {
       while(true) {
             const response = await fetch("/api/stats")
             if (response.status == 200) {
                   const data = await response.json()
                   this.stats = data
-                  await new Promise(resolve => setTimeout(resolve, 10000));
+                  await new Promise(resolve => setTimeout(resolve, 30000));
             } else {
                   this.wg = false
                   //return 0
@@ -215,7 +265,7 @@ methods: {
             return "/src/img/conn2.png"
       }
  }
-}
+},
 }
 </script>
 
@@ -331,6 +381,14 @@ img.displayed {
       user-select: none;
       appearance: none;
 }
+.ss {
+      white-space: normal;
+      overflow: hidden;
+      text-overflow: ellipsis;
+ }
+ .cp {
+      width: 55px;
+ }
 .inter {
       color: #ffffff;
       background-color: #000000;
