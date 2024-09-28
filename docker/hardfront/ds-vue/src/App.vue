@@ -39,7 +39,7 @@
                   <div>
                         <img src="./img/rus.png" width="35px">
                         &#160WireGuard Москва&#160
-                        <font color="red" size="1">[obfs]</font>
+                        <font color="red" size="1">*[obfs]</font>
                   </div>
                   <div>
                         <button class="btn" @click="setWGconf(wg[1].w_host)">Создать</button>
@@ -58,8 +58,8 @@
             </div>
             <div class="wg">
                   <div>
-                        <img src="./img/ss.svg" width="20px">
-                        ShadowSocks
+                        <img style="vertical-align:middle" src="./img/ss.png" width="26px">
+                        <span style="vertical-align:middle">&#160ShadowSocks</span>
                   </div>
             </div>      
             <div class="clients">&#160&#160
@@ -84,6 +84,17 @@
                         <a @click="copySS('ss_ru')"><img src="./img/cp.png"></a>
                   </div>&#160
             </div>
+            <div class="wg">
+                  <div>
+                        <img style="vertical-align:middle" src="./img/obfs.png" width="25px">
+                        <span style="vertical-align:middle">&#160*[obfs]</span>
+                  </div>
+            </div>
+            <div class="clients obfs">&#160&#160
+                  <div>
+                        РНК блокирует wireguard-Москва. Для обхода блокировки необходимо обфусцировать(маскировать) трафик wireguard.
+                  </div>&#160
+            </div>      
       </div>
       <div class="footer">
             <span>&copy; 2024 ebosh-product</span>
@@ -332,6 +343,7 @@ img.displayed {
       display: flex;
       flex-direction: row;
       justify-content: space-between;
+      vertical-align: middle;
       font-size: 24px;
       font-weight: 700;
       margin-top: 20px;
@@ -345,6 +357,10 @@ img.displayed {
       background: rgba(0,0,0,0.1);
       border-radius: 6px;
       height:  45px;
+}
+.obfs {
+      background: rgba(236, 130, 130, 0.336);
+      height:  50px;
 }
 .main {
 	flex: 1 0 auto;
