@@ -39,7 +39,7 @@
                   <div>
                         <img src="./img/rus.png" width="35px">
                         &#160WireGuard Москва&#160
-                        <font color="red" size="1">*[obfs]</font>
+                        <font style="vertical-align:middle; color: red; font-size: 10px">*obfs</font>
                   </div>
                   <div>
                         <button class="btn" @click="setWGconf(wg[1].w_host)">Создать</button>
@@ -66,8 +66,8 @@
                   <div>
                         <img src="./img/fin.png" width="20px">
                   </div>&#160&#160
-                  <div class="ss" id="ss_fi">
-                        ss://{{ ss.ss_fi }}#DarkSurf[Fi]
+                  <div class="ss">
+                        <span id="ss_fi">ss://{{ ss.ss_fi }}#DarkSurf[Fi]</span>
                   </div>
                   <div>
                         <a @click="copySS('ss_fi')"><img src="./img/cp.png"></a>
@@ -77,8 +77,8 @@
                   <div>
                         <img src="./img/rus.png" width="20px"> 
                   </div>&#160&#160
-                  <div class="ss" id="ss_ru">
-                        ss://{{ ss.ss_ru }}#DarkSurf[Ru]
+                  <div class="ss">
+                        <span id="ss_ru">ss://{{ ss.ss_ru }}#DarkSurf[Ru]</span>
                   </div>
                   <div>
                         <a @click="copySS('ss_ru')"><img src="./img/cp.png"></a>
@@ -86,8 +86,8 @@
             </div>
             <div class="wg">
                   <div>
-                        <img style="vertical-align:middle" src="./img/obfs.png" width="25px">
-                        <span style="vertical-align:middle">&#160*[obfs]</span>
+                        <img style="vertical-align:middle" src="./img/obfs.png" width="28px">
+                        <span style="vertical-align:middle">&#160*obfs</span>
                   </div>
             </div>
             <div class="clients obfs">&#160&#160
@@ -197,18 +197,13 @@ methods: {
       VueCookies.remove("t")
       window.location.reload()
   },
-  handler(e) {
-      const text = e.target.innerText
-      alert(text)
-      navigator.clipboard.writeText("Copy Clipboard");
-  },
   copySS(x) {
       const range = document.createRange();
       range.selectNode(document.getElementById(x));
-      window.getSelection().removeAllRanges(); // clear current selection
-      window.getSelection().addRange(range); // to select text
+      window.getSelection().removeAllRanges(); 
+      const txt = window.getSelection().addRange(range)
       document.execCommand("copy");
-      window.getSelection().removeAllRanges();// to deselect
+      window.getSelection().removeAllRanges();
       alert("скопировано в буфер")
   },
   async getWG() {
@@ -359,7 +354,8 @@ img.displayed {
       height:  45px;
 }
 .obfs {
-      background: rgba(236, 130, 130, 0.336);
+      background: rgba(0, 255, 17, 0);
+      border: #000000 solid 1px;
       height:  50px;
 }
 .main {
@@ -464,5 +460,9 @@ img.displayed {
   .wg {
       font-size: 16px;
   }
+  .obfs {
+      border: #000000 solid 0px;
+      height: 90px;
+ }
 }
 </style>
