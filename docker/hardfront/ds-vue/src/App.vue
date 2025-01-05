@@ -5,7 +5,7 @@
       </dialog>
       <div class="header">
             <span> 
-                  DARKSURF.RU 
+                  <i>DarkSurf.ru</i>
             </span>
             <span>
                   <a @click="getlogout()">
@@ -97,20 +97,20 @@
             </div>      
       </div>
       <div class="footer">
-            <span>&copy; 2024 ebosh-product</span>
+            <span>&copy; 2025 ebosh-product</span>
       </div>
 </div>
 
 <div class="wrapper" v-else>
       <div class="main">
             <div class="logo">
-                  <span>DARKSURF.RU</span>
+                  <span><i>DarkSurf.ru</i></span>
             </div>
             <div>      
-                  <img src="./img/4as.gif" width="125px" style="border-radius: 10px;">
+                  <img src="./img/logozbs_ng.png" width="165px" style="border-radius: 10px;">
             </div>
             <div>
-                  <font style="font-family:HHCyr;font-size: 30px">МАНДУЛЯТОР 3000</font>
+                  <font style="font-family:sber;font-size: 16px"><b>МАНДУЛЯТОР 3000</b></font>
             </div>
             <div>
                   <p>&#160 {{ error }}</p>
@@ -127,7 +127,7 @@
             </div>
       </div>
       <div class="footer">
-            <span>&copy; 2024 ebosh-product</span>
+            <span>&copy; 2025 ebosh-product</span>
       </div>
 </div>
 </template>
@@ -282,7 +282,7 @@ methods: {
 }
 @font-face {
       font-family: 'HH';
-      src: url('./fonts/HH.ttf') format('truetype');
+      src: url('./fonts/HH2.ttf') format('truetype');
 }
 @font-face {
       font-family: 'HHCyr';
@@ -298,6 +298,7 @@ methods: {
       background-image: url(./img/fon2.png);
       font-family: "sber";
       font-size: 14px;
+      color: #313131;
       margin: 0;
 }
 
@@ -327,7 +328,7 @@ img.displayed {
       display: flex;
       justify-content: space-between;
       font-family: HH;
-      font-size: 65px;
+      font-size: 55px;
       width: 80%;
 }
 .content {
@@ -368,7 +369,7 @@ img.displayed {
 }
 .logo {
       font-family: HH;
-      font-size: 65px;
+      font-size: 55px;
 }
 .footer {
 	flex: 0 0 auto;
@@ -379,7 +380,7 @@ img.displayed {
 .btn {
       display: inline-block;
       outline: none;
-      border: 1px solid #000000;
+      border: 1px solid #313131;
       border-radius: 6px;
       font-family: sber;
       align-items: center;
@@ -387,7 +388,7 @@ img.displayed {
       line-height: 28px;
       font-size: 14px;
       text-decoration: none;
-      color: #000000;
+      color: #313131;
       background-color: #ffffff;
       cursor: pointer;
       user-select: none;
@@ -403,7 +404,7 @@ img.displayed {
  }
 .inter {
       color: #ffffff;
-      background-color: #000000;
+      background-color: #313131;
 }
 .txt {
       display: block;
@@ -455,13 +456,13 @@ img.displayed {
 }
 @media (max-width: 420px) {
   .header {
-      font-size: 50px;
+      font-size: 40px;
   }
   .wg {
       font-size: 16px;
   }
   .obfs {
-      border: #000000 solid 0px;
+      border: #313131 solid 0px;
       height: 90px;
  }
 }
