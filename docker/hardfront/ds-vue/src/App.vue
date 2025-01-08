@@ -92,7 +92,8 @@
             </div>
             <div class="clients obfs">&#160&#160
                   <div>
-                        РНК блокирует wireguard-Москва. Для обхода блокировки необходимо обфусцировать(маскировать) трафик wireguard.
+                        РКН перестал блокировать трафик.
+                        <s>РКН блокирует wireguard-Москва. Для обхода блокировки необходимо обфусцировать(маскировать) трафик wireguard.</s>
                   </div>&#160
             </div>      
       </div>
@@ -107,7 +108,7 @@
                   <span><i>DarkSurf.ru</i></span>
             </div>
             <div>      
-                  <img src="./img/logozbs_ng.png" width="165px" style="border-radius: 10px;">
+                  <img src="./img/logozbs.png" width="165px" style="border-radius: 10px;">
             </div>
             <div>
                   <font style="font-family:sber;font-size: 16px"><b>МАНДУЛЯТОР 3000</b></font>
@@ -328,7 +329,7 @@ img.displayed {
       display: flex;
       justify-content: space-between;
       font-family: HH;
-      font-size: 55px;
+      font-size: 50px;
       width: 80%;
 }
 .content {
@@ -369,7 +370,7 @@ img.displayed {
 }
 .logo {
       font-family: HH;
-      font-size: 55px;
+      font-size: 50px;
 }
 .footer {
 	flex: 0 0 auto;
